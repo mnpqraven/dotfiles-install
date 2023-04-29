@@ -1,0 +1,35 @@
+{
+    "profiles": [ "default", "work", "home" ],
+    "tasks": [
+        {
+            "name": "installing Editors",
+            "cmds": [
+                {
+                    "description": "packages",
+                    "install_type": "pacman",
+                    "args": [ "nvim", "alacritty" ]
+                }
+            ]
+        },
+        {
+            "name": "installing work stuff",
+            "profile": [ "work" ],
+            "cmds": [
+                {
+                    "install_type": "yay",
+                    "args": [ "work_repo_name" ]
+                }
+            ]
+        },
+        {
+            "name": "installing home stuff",
+            "profile": [ "home" ],
+            "cmds": [
+                {
+                    "install_type": "yay",
+                    "args": [ "home_repo_name" ]
+                }
+            ]
+        }
+    ]
+}
