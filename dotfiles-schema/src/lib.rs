@@ -1,6 +1,7 @@
 mod types;
 use schemars::schema_for;
 pub use types::ConfigFile;
+pub use types::TaskCommand;
 
 pub fn generate_schema() -> String {
     let schema = schema_for!(ConfigFile);

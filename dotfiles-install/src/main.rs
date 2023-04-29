@@ -1,6 +1,10 @@
 use clap::Parser;
 use dotfiles_schema::ConfigFile;
-use std::error::Error;
+use std::{
+    error::Error,
+    io::{self, Write},
+    process::Command,
+};
 use worker::io::{handle_path_type, PathType};
 
 mod worker;
@@ -28,6 +32,22 @@ async fn main() -> Result<(), Box<dyn Error>> {
          // constring default command for each [`InstallType`], ready to accept
          // serialized inputs
     }
+    println!("running command ls -la");
+    // TODO: default pacman + yay command builder
+    // we need to test with a linux machine
+    let ls_cmd = Command::new("ls")
+        .arg("-la")
+        .output()
+        .expect("failed to run command");
+
+    // normally writing command output to stdout
+    // io::stdout().write_all(&ls_cmd.stdout)?;
+    if !ls_cmd.stderr.is_empty() {
+        // do what we need to do with error
+        // logging/tracing, saving to summary
+        io::stdout().write_all(&ls_cmd.stderr)?;
+    }
+
     { // reading through config
     }
     {
