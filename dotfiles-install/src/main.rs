@@ -1,37 +1,29 @@
 use clap::Parser;
 use dotfiles_schema::ConfigFile;
-use std::{fs::File, io::BufReader};
+use std::error::Error;
+use worker::io::{handle_path_type, PathType};
+
+mod worker;
 
 #[derive(Parser)]
 struct Cli {
-    name: Option<String>,
+    #[arg(long = "cfg")]
+    config: String,
 }
 
 #[tokio::main]
-async fn main() {
+async fn main() -> Result<(), Box<dyn Error>> {
     let cli = Cli::parse();
-    match cli.name {
-        Some(name) => {
-            println!("Hello {}", name);
-        }
-        None => {}
-    }
+
+    // NOTE: --cfg
+    // handles path/url handling
+    let path = handle_path_type(&cli.config)?;
+    let _config: ConfigFile = match path {
+        PathType::Dir => ConfigFile::from_dir(&cli.config)?,
+        PathType::Url => ConfigFile::from_url(&cli.config).await?,
+    };
 
     // manual input + testing
-    {
-        // IO
-        // accept either path or url
-        // UNWRAP: handle
-        let reader = File::open("./template.jsonc").unwrap();
-        // UNWRAP: handle
-        let datastruct: ConfigFile = serde_json::from_reader(BufReader::new(reader)).unwrap();
-        dbg!(&datastruct);
-    }
-    {
-        // schema
-        // let schema = schema_for!(ConfigFile);
-        // println!("{}", serde_json::to_string_pretty(&schema).unwrap());
-    }
     { // command building
          // constring default command for each [`InstallType`], ready to accept
          // serialized inputs
@@ -41,4 +33,6 @@ async fn main() {
     {
         // running command + logging + piping through stderr
     }
+
+    Ok(())
 }

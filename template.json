@@ -1,4 +1,5 @@
 {
+    "$schema": "https://worker.othi.dev/api/dotfiles/install_schema",
     "profiles": [ "default", "work", "home" ],
     "tasks": [
         {
