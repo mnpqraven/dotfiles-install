@@ -5,6 +5,7 @@ use std::{
     io::{self, Write},
     process::Command,
 };
+use tracing::debug;
 use worker::io::{handle_path_type, PathType};
 
 mod worker;
@@ -13,10 +14,16 @@ mod worker;
 struct Cli {
     #[arg(long = "cfg")]
     config: String,
+    #[arg(long)]
+    debug: bool,
 }
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
+    tracing_subscriber::fmt()
+        .with_max_level(tracing::Level::DEBUG)
+        .init();
+
     let cli = Cli::parse();
 
     // NOTE: --cfg
@@ -26,6 +33,10 @@ async fn main() -> Result<(), Box<dyn Error>> {
         PathType::Dir => ConfigFile::from_dir(&cli.config)?,
         PathType::Url => ConfigFile::from_url(&cli.config).await?,
     };
+    if cli.debug {
+        debug!("Running debug mode");
+        debug!("{:?}", _config);
+    }
 
     // manual input + testing
     { // command building
