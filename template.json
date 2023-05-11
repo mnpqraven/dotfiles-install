@@ -8,7 +8,7 @@
                 {
                     "description": "packages",
                     "install_type": "pacman",
-                    "args": [ "nvim", "alacritty" ]
+                    "args": [ "neovim", "alacritty" ]
                 }
             ]
         },
@@ -17,8 +17,8 @@
             "profile": [ "work" ],
             "cmds": [
                 {
-                    "install_type": "yay",
-                    "args": [ "work_repo_name" ]
+                    "install_type": "pacman",
+                    "args": [ "neofetch" ]
                 }
             ]
         },
