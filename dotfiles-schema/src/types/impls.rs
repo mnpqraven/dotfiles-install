@@ -35,6 +35,7 @@ impl InstallType {
             }
             InstallType::Yay => todo!(),
             InstallType::Script => todo!(),
+            InstallType::Cargo => todo!(),
         }
     }
 
@@ -42,6 +43,7 @@ impl InstallType {
         match self {
             InstallType::Pacman => vec!["pacman".into(), "-S".into(), "--noconfirm".into()],
             InstallType::Yay => vec![],
+            InstallType::Cargo => vec![],
             InstallType::Script => vec![],
         }
     }

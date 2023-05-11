@@ -41,5 +41,6 @@ pub enum Profile {
 pub enum InstallType {
     Pacman,
     Yay,
+    Cargo,
     Script,
 }
