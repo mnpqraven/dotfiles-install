@@ -5,7 +5,6 @@ use std::{env, error::Error};
 use tracing::info;
 use worker::io::{get_path_type, PathType};
 
-mod logger;
 mod worker;
 
 #[derive(Parser)]
