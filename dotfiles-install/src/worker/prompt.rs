@@ -1,4 +1,4 @@
-use dotfiles_schema::Profile;
+use dotfiles_schema::{Profile, Task};
 use std::{error::Error, io::stdin};
 
 pub fn ask_profile(profiles: &Vec<Profile>) -> Result<Profile, Box<dyn Error>> {
@@ -30,5 +30,29 @@ pub fn ask_profile(profiles: &Vec<Profile>) -> Result<Profile, Box<dyn Error>> {
     match t.is_ok() {
         true => t,
         false => ask_profile(profiles),
+    }
+}
+
+pub fn confirm_summary(tasks: &Vec<Task>) -> Result<bool, Box<dyn Error>> {
+    println!("You are about to run the following tasks:");
+    for task in tasks.iter() {
+        println!("{}", task);
+    }
+    println!("Proceed ? y/n");
+
+    let mut buffer = String::new();
+
+    // `read_line` returns `Result` of bytes read
+    stdin().read_line(&mut buffer)?;
+    let input_text = match buffer.trim_end().parse::<char>() {
+        Ok('y') | Ok('Y') => Ok(true),
+        Ok('n') | Ok('N') => Ok(false),
+        _ => Err("Invalid input, please try again".into()),
+    };
+
+    // recursion
+    match input_text.is_ok() {
+        true => input_text,
+        false => confirm_summary(tasks),
     }
 }

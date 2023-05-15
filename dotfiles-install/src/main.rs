@@ -1,8 +1,8 @@
 use crate::worker::prompt;
 use clap::Parser;
-use dotfiles_schema::{ConfigFile, Task};
+use dotfiles_schema::{ConfigFile, Profile, Task};
 use std::{env, error::Error};
-use tracing::info;
+use tracing::{debug, info};
 use tracing_subscriber::fmt::writer::MakeWriterExt;
 use worker::io::{get_path_type, PathType};
 
@@ -45,12 +45,10 @@ async fn main() -> Result<(), Box<dyn Error>> {
         PathType::Url => ConfigFile::from_url(&cli.config).await?,
     };
 
-    // let sudo_pw = ask_password("Your sudo password: ".into()).await?;
-
-    // debug!("Running in debug mode");
+    debug!("Running in debug mode");
     println!("your config: {:?}", config);
 
-    let profile = prompt::ask_profile(&config.profiles)?;
+    let profile: Profile = prompt::ask_profile(&config.profiles)?;
     println!("You selected {}", profile);
 
     let filtered_tasks: Vec<Task> = config
@@ -61,6 +59,11 @@ async fn main() -> Result<(), Box<dyn Error>> {
             None => true,
         })
         .collect();
+
+    if !prompt::confirm_summary(&filtered_tasks)? {
+        println!("Exiting program");
+        return Ok(());
+    }
 
     for task in filtered_tasks {
         info!("Executing task {}", task.name);

@@ -1,9 +1,10 @@
 use tokio::{io::AsyncReadExt, process::Command};
 use tracing::{debug, error, info};
 
-use crate::{ConfigFile, TaskCommand};
+use crate::{ConfigFile, Task, TaskCommand};
 use std::{
     error::Error,
+    fmt::Display,
     fs::File,
     io::{self, BufReader, Write},
     process::Stdio,
@@ -46,6 +47,13 @@ impl InstallType {
             InstallType::Cargo => vec![],
             InstallType::Script => vec![],
         }
+    }
+}
+
+impl Display for Task {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let fmt = format!("{}", self.name);
+        write!(f, "{}", fmt)
     }
 }
 
