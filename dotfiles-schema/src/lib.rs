@@ -4,7 +4,6 @@ pub use types::ConfigFile;
 pub use types::Profile;
 pub use types::TaskCommand;
 
-pub use types::impls::build_command;
 pub use types::InstallType;
 pub use types::Task;
 

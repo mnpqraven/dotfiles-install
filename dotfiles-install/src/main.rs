@@ -11,7 +11,7 @@ mod worker;
 #[derive(Parser)]
 struct Cli {
     #[arg(long = "cfg")]
-    config: String,
+    config: Option<String>,
     #[arg(long)]
     debug: bool,
 }
@@ -39,10 +39,14 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     // NOTE: --cfg
     // handles path/url handling
-    let path = get_path_type(&cli.config)?;
-    let config: ConfigFile = match path {
-        PathType::Dir => ConfigFile::from_dir(&cli.config)?,
-        PathType::Url => ConfigFile::from_url(&cli.config).await?,
+    let config_path = match cli.config {
+        Some(arg_data) => arg_data,
+        None => prompt::ask_config_path()?,
+    };
+
+    let config: ConfigFile = match get_path_type(&config_path)? {
+        PathType::Dir => ConfigFile::from_dir(&config_path)?,
+        PathType::Url => ConfigFile::from_url(&config_path).await?,
     };
 
     debug!("Running in debug mode");

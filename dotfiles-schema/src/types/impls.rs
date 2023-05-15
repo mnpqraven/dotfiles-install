@@ -1,5 +1,5 @@
 use tokio::{io::AsyncReadExt, process::Command};
-use tracing::{debug, error, info};
+use tracing::{error, info};
 
 use crate::{ConfigFile, Task, TaskCommand};
 use std::{
@@ -34,7 +34,13 @@ impl InstallType {
                     .stdin(Stdio::piped());
                 cmd
             }
-            InstallType::Yay => todo!(),
+            InstallType::Yay => {
+                let mut cmd = Command::new("yay");
+                cmd.args(self.default_args())
+                    .stdout(Stdio::piped())
+                    .stdin(Stdio::piped());
+                cmd
+            }
             InstallType::Script => todo!(),
             InstallType::Cargo => todo!(),
         }
@@ -43,7 +49,7 @@ impl InstallType {
     fn default_args(&self) -> Vec<String> {
         match self {
             InstallType::Pacman => vec!["pacman".into(), "-S".into(), "--noconfirm".into()],
-            InstallType::Yay => vec![],
+            InstallType::Yay => vec!["-S".into(), "--noconfirm".into()],
             InstallType::Cargo => vec![],
             InstallType::Script => vec![],
         }
@@ -59,8 +65,13 @@ impl Display for Task {
 
 impl TaskCommand {
     pub async fn run(&self) -> Result<(), Box<dyn Error>> {
-        let mut packages = self.args.clone();
-        let mut child = build_command(self.install_type, &mut packages)
+        let packages = self.args.clone();
+        let mut child = self
+            .install_type
+            .get_command()
+            .args(packages)
+            .stdout(Stdio::piped())
+            .stdin(Stdio::piped())
             .stderr(Stdio::piped())
             .spawn()?;
         let status = child.wait().await;
@@ -90,18 +101,4 @@ impl TaskCommand {
 
         Ok(())
     }
-}
-
-pub fn build_command(install_type: InstallType, package: &mut Vec<String>) -> Command {
-    // TODO: deprecation
-    let mut cmd = install_type.get_command();
-    // let mut args: Vec<String> = install_type.default_args();
-    // args.append(package);
-
-    debug!("Created command {}", package.join(" "));
-
-    cmd.args(package)
-        .stdout(Stdio::piped())
-        .stdin(Stdio::piped());
-    cmd
 }

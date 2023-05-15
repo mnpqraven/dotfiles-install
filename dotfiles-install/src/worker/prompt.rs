@@ -56,3 +56,12 @@ pub fn confirm_summary(tasks: &Vec<Task>) -> Result<bool, Box<dyn Error>> {
         false => confirm_summary(tasks),
     }
 }
+
+pub fn ask_config_path() -> Result<String, Box<dyn Error>> {
+    println!("Please provide your config file (path or URL):");
+    let mut buffer = String::new();
+
+    stdin().read_line(&mut buffer)?;
+
+    Ok(buffer.trim().into())
+}
