@@ -12,7 +12,7 @@ pub fn ask_profile(profiles: &Vec<Profile>) -> Result<Profile, Box<dyn Error>> {
 
     // `read_line` returns `Result` of bytes read
     stdin().read_line(&mut buffer)?;
-    let t = match buffer.trim_end().parse::<usize>() {
+    let input = match buffer.trim_end().parse::<usize>() {
         Ok(profile_index) => match profiles.get(profile_index) {
             Some(profile) => Ok(*profile),
             None => {
@@ -27,8 +27,8 @@ pub fn ask_profile(profiles: &Vec<Profile>) -> Result<Profile, Box<dyn Error>> {
     };
 
     // recursion
-    match t.is_ok() {
-        true => t,
+    match input.is_ok() {
+        true => input,
         false => ask_profile(profiles),
     }
 }
@@ -47,7 +47,10 @@ pub fn confirm_summary(tasks: &Vec<Task>) -> Result<bool, Box<dyn Error>> {
     let input_text = match buffer.trim_end().parse::<char>() {
         Ok('y') | Ok('Y') => Ok(true),
         Ok('n') | Ok('N') => Ok(false),
-        _ => Err("Invalid input, please try again".into()),
+        _ => {
+            println!("Invalid input, please try again");
+            Err("Invalid input, please try again".into())
+        }
     };
 
     // recursion
